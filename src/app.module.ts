@@ -1,16 +1,12 @@
-import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { AuthorsModule } from './authors/authors.module';
+import { Module } from '@nestjs/common';
+import { AppconfigModule } from './appconfig/appconfig.module';
+import { DatabaseModule } from './database/database.module';
+import { AuthorsModule } from './modules/authors/authors.module';
 
 @Module({
-  imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://huangrui837:hr3486798@cluster0.dly0y56.mongodb.net/local_library',
-    ),
-    AuthorsModule,
-  ],
+  imports: [AppconfigModule, DatabaseModule, AuthorsModule],
   controllers: [AppController],
   providers: [AppService],
 })

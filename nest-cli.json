@@ -11,7 +11,7 @@
           "introspectComments": true,
           "dtoFileNameSuffix": [
             ".dto.ts",
-            ".schema.ts"
+            ".entity.ts"
           ]
         }
       }
