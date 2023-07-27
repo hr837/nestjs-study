@@ -1,13 +1,13 @@
 import { OmitType } from '@nestjs/swagger';
 import { Author } from '../entities/author.entity';
-import {
-  IsNotEmpty,
-  IsString,
-  IsDateString,
-  IsOptional,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsDate } from 'class-validator';
+import { TransToDateTime } from 'src/appconfig/decorators/api-property.decorator';
 
-export class CreateAuthorDto extends OmitType(Author, ['id']) {
+export class CreateAuthorDto extends OmitType(Author, [
+  'id',
+  'createDate',
+  'updateDate',
+]) {
   /**
    * @example 小白
    */
@@ -26,13 +26,15 @@ export class CreateAuthorDto extends OmitType(Author, ['id']) {
    * @example 1919-09-09
    */
   @IsOptional()
-  @IsDateString({ strict: true })
+  @TransToDateTime()
+  @IsDate()
   dateOfBirth?: Date;
 
   /**
    * @example 1999-09-09
    */
   @IsOptional()
-  @IsDateString({ strict: true })
+  @TransToDateTime()
+  @IsDate()
   dateOfDeath?: Date;
 }

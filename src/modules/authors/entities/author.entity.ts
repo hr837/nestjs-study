@@ -1,8 +1,10 @@
 import { Expose } from 'class-transformer';
+import { TransToDateString } from 'src/appconfig/decorators/api-property.decorator';
+import { AppBaseEntity } from 'src/appconfig/entity/base.entity';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Author {
+export class Author extends AppBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -25,6 +27,7 @@ export class Author {
   @Column('date', {
     nullable: true,
   })
+  @TransToDateString()
   dateOfBirth?: Date;
 
   /**
@@ -34,6 +37,7 @@ export class Author {
   @Column('date', {
     nullable: true,
   })
+  @TransToDateString()
   dateOfDeath?: Date;
 
   /**

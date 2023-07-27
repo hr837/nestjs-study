@@ -1,6 +1,5 @@
 import { Type, applyDecorators } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { PageDataDto } from '../dto/page-data.dto';
 
 /**
  * Api分页返回数据说明
@@ -13,7 +12,6 @@ export const ApiOkPagedResponse = <TModel extends Type<any>>(model: TModel) => {
     ApiOkResponse({
       schema: {
         allOf: [
-          { $ref: getSchemaPath(PageDataDto) },
           {
             properties: {
               rows: {

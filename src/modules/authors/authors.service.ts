@@ -7,6 +7,7 @@ import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { AuthorQueryDto } from './dto/author-query.dto';
 import { PageDataDto } from '../../appconfig/dto/page-data.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AuthorsService {
@@ -17,7 +18,8 @@ export class AuthorsService {
 
   async create(createAuthorDto: CreateAuthorDto): Promise<Author> {
     this.checkDate(createAuthorDto.dateOfBirth, createAuthorDto.dateOfDeath);
-    const author = await this.authorsRepository.save(createAuthorDto);
+    const author = plainToInstance(Author, createAuthorDto);
+    await this.authorsRepository.save(author);
     return author;
   }
 
@@ -57,7 +59,8 @@ export class AuthorsService {
     return !author;
   }
 
-  checkDate(birthDate?: string | Date, deathDate?: string | Date) {
+  /** 检查作者的日期-死亡日期不能早于出生日期 */
+  checkDate(birthDate?: Date, deathDate?: Date) {
     if (!birthDate || !deathDate) return;
     if (dayjs(deathDate).isBefore(birthDate)) {
       throw new BadRequestException('死亡日期不能早于出生日期');
