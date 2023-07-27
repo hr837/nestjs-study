@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Catch,
   ExceptionFilter,
+  HttpExceptionBody,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -15,16 +16,21 @@ export class BadRequestFilter implements ExceptionFilter {
     const resultData = {
       success: false,
       msg: '请求错误：',
-      data: null,
     };
     if (typeof exceptionResponse === 'string') {
       resultData.msg += exceptionResponse;
     } else {
-      const { message } = exceptionResponse as any;
-      if (Array.isArray(message)) {
-        resultData.msg += message.toString();
+      if ('response' in exceptionResponse) {
+        const { message } = (exceptionResponse as any)
+          .response as HttpExceptionBody;
+
+        if (Array.isArray(message)) {
+          resultData.msg += message.toString();
+        } else {
+          resultData.msg += message;
+        }
       } else {
-        resultData.msg += message;
+        resultData.msg += (exceptionResponse as Error).message;
       }
     }
     // 设置新的返回数据

@@ -7,24 +7,32 @@ import {
   IsOptional,
 } from 'class-validator';
 
-export class CreateAuthorDto extends OmitType(Author, [
-  'id',
-  'dateOfBirth',
-  'dateOfDeath',
-]) {
+export class CreateAuthorDto extends OmitType(Author, ['id']) {
+  /**
+   * @example 小白
+   */
   @IsNotEmpty()
   @IsString()
   firstName: string;
 
+  /**
+   * @example 江
+   */
   @IsNotEmpty()
   @IsString()
   familyName: string;
 
+  /**
+   * @example 1919-09-09
+   */
   @IsOptional()
   @IsDateString({ strict: true })
-  dateOfBirth?: string;
+  dateOfBirth?: Date;
 
+  /**
+   * @example 1999-09-09
+   */
   @IsOptional()
   @IsDateString({ strict: true })
-  dateOfDeath?: string;
+  dateOfDeath?: Date;
 }

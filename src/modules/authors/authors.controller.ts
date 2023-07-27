@@ -6,11 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AuthorsService } from './authors.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthorQueryDto } from './dto/author-query.dto';
+import { Author } from './entities/author.entity';
+import { ApiOkPagedResponse } from 'src/appconfig/decorators/api-response.decorator';
 
 @ApiTags('Authors')
 @Controller('authors')
@@ -24,9 +28,10 @@ export class AuthorsController {
   }
 
   @ApiOperation({ summary: '查询作者' })
+  @ApiOkPagedResponse(Author)
   @Get()
-  findAll() {
-    return this.authorsService.findAll();
+  findAll(@Query() query: AuthorQueryDto) {
+    return this.authorsService.findAll(query);
   }
 
   @ApiOperation({ summary: '根据ID查找作者' })

@@ -3,8 +3,10 @@ import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Author } from './entities/author.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import * as dayjs from 'dayjs';
+import { AuthorQueryDto } from './dto/author-query.dto';
+import { PageDataDto } from '../../appconfig/dto/page-data.dto';
 
 @Injectable()
 export class AuthorsService {
@@ -19,8 +21,23 @@ export class AuthorsService {
     return author;
   }
 
-  findAll() {
-    return this.authorsRepository.find();
+  async findAll(query: AuthorQueryDto): Promise<PageDataDto<Author>> {
+    // where 条件组合
+    const nameWhere: FindOptionsWhere<Author>[] = [];
+    if (query.name?.trim()) {
+      const nameOperator = Like(`%${query.name.trim()}%`);
+      nameWhere.push({ firstName: nameOperator }, { familyName: nameOperator });
+    }
+    const [rows, total] = await this.authorsRepository.findAndCount({
+      where: [...nameWhere],
+      skip: query.skip,
+      take: query.take,
+    });
+
+    return {
+      rows,
+      total,
+    };
   }
 
   async findOne(id: string): Promise<Author> {

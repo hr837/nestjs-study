@@ -2,11 +2,13 @@ import {
   BadRequestException,
   CallHandler,
   ExecutionContext,
+  HttpException,
   Injectable,
+  InternalServerErrorException,
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable, catchError, throwError } from 'rxjs';
-import { ResponseData } from 'src/appconfig/response-data.type';
+import { TypeORMError } from 'typeorm';
 
 @Injectable()
 export class ErrorInterceptor implements NestInterceptor {
@@ -14,11 +16,15 @@ export class ErrorInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<ResponseData<null>> {
-    console.log(context);
-    return next
-      .handle()
-      .pipe(
-        catchError((err) => throwError(() => new BadRequestException(err))),
-      );
+    return next.handle().pipe(
+      catchError((err: Error) => {
+        let newException: HttpException;
+        if (err instanceof TypeORMError) {
+          newException = new InternalServerErrorException(err);
+        }
+        return throwError(() => newException ?? err);
+        // return throwError(() => new BadRequestException(err));
+      }),
+    );
   }
 }

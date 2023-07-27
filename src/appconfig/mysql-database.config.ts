@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { InjectKey_database } from './app.constant';
+import { InjectKey_database } from './constant';
 import type { MysqlConnectionCredentialsOptions } from 'typeorm/driver/mysql/MysqlConnectionCredentialsOptions';
 
 /** 数据库配置 */

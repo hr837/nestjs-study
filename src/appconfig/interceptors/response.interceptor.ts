@@ -5,7 +5,6 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
-import { ResponseData } from 'src/appconfig/response-data.type';
 
 @Injectable()
 export class ResponseInterceptor<T>

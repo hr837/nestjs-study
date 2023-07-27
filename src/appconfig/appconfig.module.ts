@@ -9,6 +9,7 @@ import mysqlDatabaseConfig from './mysql-database.config';
 // import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { BadRequestFilter } from './filters/bad-request.filter';
+import { ServerErrorFilter } from './filters/server-error.filter';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,6 +30,10 @@ import { BadRequestFilter } from './filters/bad-request.filter';
     {
       provide: APP_FILTER,
       useClass: BadRequestFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ServerErrorFilter,
     },
     {
       provide: APP_INTERCEPTOR,
