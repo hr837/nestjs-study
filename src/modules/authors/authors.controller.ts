@@ -16,7 +16,7 @@ import { AuthorQueryDto } from './dto/author-query.dto';
 import { Author } from './entities/author.entity';
 import { ApiOkPagedResponse } from 'src/appconfig/decorators/api-response.decorator';
 
-@ApiTags('Authors')
+@ApiTags('作者')
 @Controller('authors')
 export class AuthorsController {
   constructor(private readonly authorsService: AuthorsService) {}
