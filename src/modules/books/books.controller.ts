@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -13,6 +14,7 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiOkPagedResponse } from 'src/appconfig/decorators/api-response.decorator';
 import { Book } from './entities/book.entity';
+import { BookQueryDto } from './dto/book-query.dto';
 
 @ApiTags('图书')
 @Controller('books')
@@ -28,8 +30,8 @@ export class BooksController {
   @ApiOperation({ summary: '查询图书' })
   @Get()
   @ApiOkPagedResponse(Book)
-  findAll() {
-    return this.booksService.findAll();
+  findAll(@Query() query: BookQueryDto) {
+    return this.booksService.findAll(query);
   }
 
   @Get(':id')

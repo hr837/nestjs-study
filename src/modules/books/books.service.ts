@@ -3,7 +3,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from './entities/book.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import { Author } from '../authors/entities/author.entity';
 import {
   instanceToInstance,
@@ -11,6 +11,7 @@ import {
   plainToInstance,
 } from 'class-transformer';
 import { PageDataDto } from 'src/appconfig/dto/page-data.dto';
+import { BookQueryDto } from './dto/book-query.dto';
 
 @Injectable()
 export class BooksService {
@@ -31,24 +32,44 @@ export class BooksService {
     return await this.booksRepository.save(book);
   }
 
-  async findAll(): Promise<PageDataDto<Book>> {
-    const [rows, total] = await this.booksRepository.findAndCount();
-    console.log(rows[0]);
+  async findAll(query: BookQueryDto): Promise<PageDataDto<Book>> {
+    // where 条件组合
+    const where: FindOptionsWhere<Book>[] = [];
+    if (query.title?.trim()) {
+      where.push({ title: Like(`%${query.title.trim()}%`) });
+    }
+    const [rows, total] = await this.booksRepository.findAndCount({
+      where,
+      skip: query.skip,
+      take: query.take,
+    });
     return {
       rows,
       total,
     };
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} book`;
+  async findOne(id: string) {
+    return await this.booksRepository.findOneBy({ id });
   }
 
-  update(id: string, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
+  async update(id: string, updateBookDto: UpdateBookDto) {
+    const book = await this.booksRepository.findOneBy({ id });
+    if (!book) throw new BadRequestException('无效的ID');
+    if (updateBookDto.authorId) {
+      const author = await this.authorsRepository.findOneBy({
+        id: updateBookDto.authorId,
+      });
+      if (!author) throw new BadRequestException('无效的作者ID');
+      book.author = author;
+    }
+    const updateBook = this.booksRepository.merge(book, updateBookDto);
+    return await this.booksRepository.save(updateBook);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} book`;
+  async remove(id: string) {
+    await this.booksRepository.delete(id);
+    const book = await this.booksRepository.findOneBy({ id });
+    return !book;
   }
 }
